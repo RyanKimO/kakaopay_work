@@ -19,5 +19,5 @@ public class DistributionDTO {
     private Long distributedAmount;
     private LocalDateTime distributedAt;
 
-    private List<DividendDTO> dividends = new ArrayList<>();
+    private List<DividendDTO> distributedHistory = new ArrayList<>();
 }
