@@ -3,6 +3,9 @@ package com.kakaopay.money.common.validator;
 import java.time.LocalDateTime;
 import com.kakaopay.money.common.exception.readable.NotDistributionOwnerException;
 import com.kakaopay.money.common.exception.readable.ReadableTimeExpiredException;
+import com.kakaopay.money.common.exception.receivable.OutSideOfRoomException;
+import com.kakaopay.money.common.exception.receivable.OwnDistributionException;
+import com.kakaopay.money.common.exception.receivable.ReceivableTimeExpiredException;
 import com.kakaopay.money.model.Distribution;
 
 /**
@@ -32,13 +35,14 @@ public class DistributionValidator {
     }
 
 
-    public static boolean isReceivable(Distribution distribution, String roomId, Long userId) {
+    public static void validateReceivable(Distribution distribution, Long userId, String roomId) {
         if(distribution.getOwnerId().equals(userId))
-            return false;
+            throw new OwnDistributionException();
         if(!distribution.getRoomId().equals(roomId))
-            return false;
+            throw new OutSideOfRoomException();
 
-        return isReceivableTime(distribution);
+        if(!isReceivableTime(distribution))
+            throw new ReceivableTimeExpiredException();
     }
 
 

@@ -64,4 +64,12 @@ public class DistributionService {
                 .orElseThrow(() -> new DataNotFoundException(token + " 조회결과 없음"));
     }
 
+
+    //    @Transactional
+    //    public Long receiveDividend(Long userId, String roomId, String token) {
+    //        Distribution distribution = getDistributionByToken(token);
+    //
+    //        DistributionValidator.validateReceivable(distribution, userId, roomId);
+    //    }
+
 }

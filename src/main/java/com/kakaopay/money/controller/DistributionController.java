@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -59,6 +60,18 @@ public class DistributionController {
             @RequestParam Integer divCount) {
 
         String token = distributionService.createDistribution(userId, roomId, amount, divCount);
+
+        return ResponseFactory.createResponse(token, HttpStatus.OK, "뿌리기가 완료되었습니다.");
+    }
+
+
+    @PutMapping("/{token}/dividends")
+    public ResponseEntity<ResponseData<String>> receiveDividend(
+            @RequestHeader(name = USER_ID_ATTR) Long userId,
+            @RequestHeader(name = ROOM_ID_ATTR) String roomId, @PathVariable String token) {
+        TokenValidator.validateToken(token);
+
+        Long receviedAmount = distributionService.receiveDividend(userId, roomId, token);
 
         return ResponseFactory.createResponse(token, HttpStatus.OK, "뿌리기가 완료되었습니다.");
     }
