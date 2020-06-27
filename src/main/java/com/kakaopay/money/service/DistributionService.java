@@ -9,6 +9,7 @@ import com.kakaopay.money.repository.DistributionRepository;
 import com.kakaopay.money.service.processor.DistributionProcessor;
 import com.kakaopay.money.service.processor.ReceiveProcessor;
 import com.kakaopay.money.service.processor.strategy.distribution.UnFairDistributionStrategy;
+import com.kakaopay.money.service.processor.strategy.pick.SequentialPickStrategy;
 import com.kakaopay.money.token.TokenEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -66,7 +67,7 @@ public class DistributionService {
 
         DistributionValidator.validateReceivable(distribution, userId, roomId);
 
-        return receiveProcessor.process(distribution, userId);
+        return receiveProcessor.process(distribution, userId, new SequentialPickStrategy());
     }
 
 
