@@ -4,7 +4,7 @@ import java.util.NoSuchElementException;
 import com.kakaopay.money.model.Distribution;
 import com.kakaopay.money.model.Dividend;
 import com.kakaopay.money.repository.DistributionRepository;
-import com.kakaopay.money.service.processor.strategy.UnFairDistributionStrategy;
+import com.kakaopay.money.service.processor.strategy.distribution.UnFairDistributionStrategy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -6,9 +6,9 @@ import com.kakaopay.money.converter.DistributionConverter;
 import com.kakaopay.money.dto.DistributionDTO;
 import com.kakaopay.money.model.Distribution;
 import com.kakaopay.money.repository.DistributionRepository;
-import com.kakaopay.money.service.mq.ReceiveDividendRequestSender;
 import com.kakaopay.money.service.processor.DistributionProcessor;
-import com.kakaopay.money.service.processor.strategy.UnFairDistributionStrategy;
+import com.kakaopay.money.service.processor.ReceiveProcessor;
+import com.kakaopay.money.service.processor.strategy.distribution.UnFairDistributionStrategy;
 import com.kakaopay.money.token.TokenEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,21 +25,20 @@ public class DistributionService {
     private final DistributionRepository distributionRepository;
     private final DistributionConverter distributionConverter;
     private final DistributionProcessor distributionProcessor;
-    private final ReceiveDividendRequestSender receiveDividendRequestSender;
+    private final ReceiveProcessor receiveProcessor;
     private final TokenEncoder tokenEncoder;
 
 
     @Autowired
     public DistributionService(DistributionRepository distributionRepository,
             DistributionConverter distributionConverter,
-            DistributionProcessor distributionProcessor,
-            ReceiveDividendRequestSender receiveDividendRequestSender,
+            DistributionProcessor distributionProcessor, ReceiveProcessor receiveProcessor,
             @Qualifier("defaultTokenEncoder") TokenEncoder tokenEncoder) {
         this.distributionRepository = distributionRepository;
         this.tokenEncoder = tokenEncoder;
         this.distributionConverter = distributionConverter;
         this.distributionProcessor = distributionProcessor;
-        this.receiveDividendRequestSender = receiveDividendRequestSender;
+        this.receiveProcessor = receiveProcessor;
     }
 
 
@@ -61,23 +60,21 @@ public class DistributionService {
     }
 
 
-    public Distribution getDistributionByToken(String token) {
-        Long distributionId = tokenEncoder.decode(token);
-
-        return distributionRepository.findById(distributionId)
-                .orElseThrow(() -> new DataNotFoundException(token + " 조회결과 없음"));
-    }
-
-
     @Transactional
     public Long receiveDividend(Long userId, String roomId, String token) {
         Distribution distribution = getDistributionByToken(token);
 
         DistributionValidator.validateReceivable(distribution, userId, roomId);
 
-        receiveDividendRequestSender.send(token, userId);
+        return receiveProcessor.process(distribution, userId);
+    }
 
-        return 1L;
+
+    private Distribution getDistributionByToken(String token) {
+        Long distributionId = tokenEncoder.decode(token);
+
+        return distributionRepository.findById(distributionId)
+                .orElseThrow(() -> new DataNotFoundException(token + " 조회결과 없음"));
     }
 
 }

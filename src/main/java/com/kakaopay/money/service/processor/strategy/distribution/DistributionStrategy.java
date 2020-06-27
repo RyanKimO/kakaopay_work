@@ -1,4 +1,4 @@
-package com.kakaopay.money.service.processor.strategy;
+package com.kakaopay.money.service.processor.strategy.distribution;
 
 import java.util.Set;
 import com.kakaopay.money.model.Distribution;
