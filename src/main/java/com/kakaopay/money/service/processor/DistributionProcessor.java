@@ -4,7 +4,7 @@ import java.util.Set;
 import com.kakaopay.money.model.Distribution;
 import com.kakaopay.money.model.Dividend;
 import com.kakaopay.money.repository.DistributionRepository;
-import com.kakaopay.money.service.processor.strategy.DistributionStrategy;
+import com.kakaopay.money.service.processor.strategy.distribution.DistributionStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

@@ -61,7 +61,7 @@ public class DistributionController {
 
         String token = distributionService.createDistribution(userId, roomId, amount, divCount);
 
-        return ResponseFactory.createResponse(token, HttpStatus.OK, "뿌리기가 완료되었습니다.");
+        return ResponseFactory.createResponse(token, HttpStatus.OK, "뿌리기 생성이 완료되었습니다.");
     }
 
 

@@ -1,4 +1,4 @@
-package com.kakaopay.money.service.processor.picker;
+package com.kakaopay.money.service.processor.strategy.pick;
 
 import com.kakaopay.money.common.exception.receivable.DistributeDoneException;
 import com.kakaopay.money.model.Distribution;
@@ -10,10 +10,10 @@ import org.springframework.stereotype.Component;
  * Date : 2020-06-27
  */
 @Component
-public class SequentialDividendPicker implements DividendPicker {
+public class SequentialPickStrategy implements DividendPickStrategy {
 
     public Dividend pick(Distribution distribution) {
-        return distribution.getDividends().stream().filter(Dividend::isNotReceived).findAny()
+        return distribution.getDividends().stream().filter(Dividend::isNotReceived).findFirst()
                 .orElseThrow(DistributeDoneException::new);
     }
 }

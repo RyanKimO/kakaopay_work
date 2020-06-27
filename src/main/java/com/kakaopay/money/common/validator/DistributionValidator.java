@@ -3,6 +3,7 @@ package com.kakaopay.money.common.validator;
 import java.time.LocalDateTime;
 import com.kakaopay.money.common.exception.readable.NotDistributionOwnerException;
 import com.kakaopay.money.common.exception.readable.ReadableTimeExpiredException;
+import com.kakaopay.money.common.exception.receivable.AlreadyReceivedException;
 import com.kakaopay.money.common.exception.receivable.DistributeDoneException;
 import com.kakaopay.money.common.exception.receivable.OutSideOfRoomException;
 import com.kakaopay.money.common.exception.receivable.OwnDistributionException;
@@ -44,8 +45,20 @@ public class DistributionValidator {
         if(distribution.sumOfDistributedAmount().equals(distribution.getAmount()))
             throw new DistributeDoneException();
 
+        if(isAlreadyReceived(distribution, userId))
+            throw new AlreadyReceivedException();
+
         if(!isReceivableTime(distribution))
             throw new ReceivableTimeExpiredException();
+    }
+
+
+    private static boolean isAlreadyReceived(Distribution distribution, Long userId) {
+        return distribution.getDividends().stream().anyMatch(e -> {
+            if(e.getReceiverId() == null)
+                return false;
+            return e.getReceiverId().equals(userId);
+        });
     }
 
 

@@ -3,6 +3,7 @@ package com.kakaopay.money.service.processor.strategy;
 import java.util.Set;
 import com.kakaopay.money.model.Distribution;
 import com.kakaopay.money.model.Dividend;
+import com.kakaopay.money.service.processor.strategy.distribution.UnFairDistributionStrategy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
