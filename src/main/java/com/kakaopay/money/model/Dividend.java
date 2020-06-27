@@ -37,4 +37,9 @@ public class Dividend {
     @JoinColumn(name = "distribution_id", nullable = false)
     private Distribution distribution;
 
+
+    public boolean isNotReceived() {
+        return receiverId == null;
+    }
+
 }

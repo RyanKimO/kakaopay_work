@@ -3,6 +3,7 @@ package com.kakaopay.money.model;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -44,7 +45,7 @@ public class Distribution {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "distribution")
+    @OneToMany(mappedBy = "distribution", cascade = CascadeType.PERSIST)
     private Set<Dividend> dividends = new HashSet<>();
 
 
@@ -52,6 +53,10 @@ public class Distribution {
         dividends.forEach(e -> e.setDistribution(this));
     }
 
-    // expire 계산해야함
+
+    public Long sumOfDistributedAmount() {
+        return dividends.stream().filter(e -> !e.isNotReceived()).mapToLong(Dividend::getAmount)
+                .sum();
+    }
 
 }

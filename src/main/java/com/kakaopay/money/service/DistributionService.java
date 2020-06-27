@@ -6,6 +6,7 @@ import com.kakaopay.money.converter.DistributionConverter;
 import com.kakaopay.money.dto.DistributionDTO;
 import com.kakaopay.money.model.Distribution;
 import com.kakaopay.money.repository.DistributionRepository;
+import com.kakaopay.money.service.mq.ReceiveDividendRequestSender;
 import com.kakaopay.money.service.processor.DistributionProcessor;
 import com.kakaopay.money.service.processor.strategy.UnFairDistributionStrategy;
 import com.kakaopay.money.token.TokenEncoder;
@@ -24,18 +25,21 @@ public class DistributionService {
     private final DistributionRepository distributionRepository;
     private final DistributionConverter distributionConverter;
     private final DistributionProcessor distributionProcessor;
+    private final ReceiveDividendRequestSender receiveDividendRequestSender;
     private final TokenEncoder tokenEncoder;
 
 
     @Autowired
     public DistributionService(DistributionRepository distributionRepository,
-            @Qualifier("defaultTokenEncoder") TokenEncoder tokenEncoder,
             DistributionConverter distributionConverter,
-            DistributionProcessor distributionProcessor) {
+            DistributionProcessor distributionProcessor,
+            ReceiveDividendRequestSender receiveDividendRequestSender,
+            @Qualifier("defaultTokenEncoder") TokenEncoder tokenEncoder) {
         this.distributionRepository = distributionRepository;
         this.tokenEncoder = tokenEncoder;
         this.distributionConverter = distributionConverter;
         this.distributionProcessor = distributionProcessor;
+        this.receiveDividendRequestSender = receiveDividendRequestSender;
     }
 
 
@@ -57,7 +61,7 @@ public class DistributionService {
     }
 
 
-    private Distribution getDistributionByToken(String token) {
+    public Distribution getDistributionByToken(String token) {
         Long distributionId = tokenEncoder.decode(token);
 
         return distributionRepository.findById(distributionId)
@@ -65,11 +69,15 @@ public class DistributionService {
     }
 
 
-    //    @Transactional
-    //    public Long receiveDividend(Long userId, String roomId, String token) {
-    //        Distribution distribution = getDistributionByToken(token);
-    //
-    //        DistributionValidator.validateReceivable(distribution, userId, roomId);
-    //    }
+    @Transactional
+    public Long receiveDividend(Long userId, String roomId, String token) {
+        Distribution distribution = getDistributionByToken(token);
+
+        DistributionValidator.validateReceivable(distribution, userId, roomId);
+
+        receiveDividendRequestSender.send(token, userId);
+
+        return 1L;
+    }
 
 }

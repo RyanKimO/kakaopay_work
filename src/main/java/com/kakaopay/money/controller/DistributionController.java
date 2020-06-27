@@ -4,8 +4,8 @@ import com.kakaopay.money.common.ResponseData;
 import com.kakaopay.money.common.ResponseFactory;
 import com.kakaopay.money.common.exception.DataNotFoundException;
 import com.kakaopay.money.common.exception.readable.UnReadableException;
+import com.kakaopay.money.common.exception.receivable.UnReceivableException;
 import com.kakaopay.money.common.exception.token.InvalidTokenException;
-import com.kakaopay.money.common.validator.TokenValidator;
 import com.kakaopay.money.dto.DistributionDTO;
 import com.kakaopay.money.service.DistributionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@ public class DistributionController {
     public ResponseEntity<ResponseData<DistributionDTO>> getDistribution(@PathVariable String token,
             @RequestHeader(name = USER_ID_ATTR) Long userId) {
         try {
-            TokenValidator.validateToken(token);
+            // TokenValidator.validateToken(token);
             DistributionDTO dto = distributionService.getDistributionDTO(token, userId);
             return ResponseFactory.createResponse(dto, HttpStatus.OK, "뿌리기 조회가 완료되었습니다.");
         } catch(UnReadableException | InvalidTokenException | DataNotFoundException e) {
@@ -66,14 +66,17 @@ public class DistributionController {
 
 
     @PutMapping("/{token}/dividends")
-    public ResponseEntity<ResponseData<String>> receiveDividend(
+    public ResponseEntity<ResponseData<Long>> receiveDividend(
             @RequestHeader(name = USER_ID_ATTR) Long userId,
             @RequestHeader(name = ROOM_ID_ATTR) String roomId, @PathVariable String token) {
-        TokenValidator.validateToken(token);
-
-        Long receviedAmount = distributionService.receiveDividend(userId, roomId, token);
-
-        return ResponseFactory.createResponse(token, HttpStatus.OK, "뿌리기가 완료되었습니다.");
+        try {
+            //TokenValidator.validateToken(token);
+            Long receivedAmount = distributionService.receiveDividend(userId, roomId, token);
+            return ResponseFactory
+                    .createResponse(receivedAmount, HttpStatus.OK, receivedAmount + "원을 받으셨습니다!");
+        } catch(UnReceivableException | InvalidTokenException | DataNotFoundException e) {
+            return ResponseFactory.createResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
 }
